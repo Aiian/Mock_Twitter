@@ -22,9 +22,14 @@ class User {
         
         global $conn;
         
-        $sql="SELECT `email` FROM `Users` WHERE email = $email";
+        $sql="SELECT `email` FROM `Users` WHERE email = '$email'";
         $result = $conn->query($sql);
-        ($result->num_rows) ? header("Location: register.php?duplicateEmail=1") : $this->email = $email;
+        if ($result->num_rows == 0) {
+            $this->email = $email;
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public function setPassword($password, $password2) {
@@ -41,7 +46,11 @@ class User {
         
         global $conn;
 
-        $this->setEmail($email);
+        if (!$this->setEmail($email)){
+            header("Location: register.php?duplicateEmail=1");
+            die();
+        }
+        
         $this->setPassword($password, $password2);
 
         $sql = "INSERT INTO Users(`email`,`password`) VALUES ('$this->email','$this->passwordHashed')";
@@ -60,21 +69,12 @@ class User {
 
         if ($email === $result->fetch_assoc()['email'] && $passwordHashed === $result->fetch_assoc()['password']){
             
-            
             $_SESSION['email'] = $email;
             $_SESSION['$password'] = $passwordHashed;
             
         } else {
             header("Location: log_in.php?userOrPasswordNotFound=1");    
         }
-
-     
-        
-        
-        
-        
-        
-        
     }
     
     public function autoLogin(){
@@ -96,7 +96,7 @@ class User {
         }
     }
     
-    private function loadDataFromDb(){
+    private function loadFromDB(){
         
     }
     
@@ -113,15 +113,15 @@ class User {
         
     }
     
-    public function addPost(){
-        
-    }
-    
-    public function addComment(){
-        
-    }
-    
-    public function sendMessage(){
-        
-    }
+//    public function addPost(){
+//        
+//    }
+//    
+//    public function addComment(){
+//        
+//    }
+//    
+//    public function sendMessage(){
+//        
+//    }
 }
