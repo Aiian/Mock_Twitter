@@ -1,14 +1,16 @@
 <?php
-require_once './top_inc.php';
+
+require_once './top_inc_no_log.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST'){
-    if (isset($_POST['email']) && isset($_POST['password']) && isset($_POST['password2'])){
+    if (isset($_POST['email']) && isset($_POST['password'])){
 
         $email = $conn->escape_string($_POST['email']);
-        $password = $conn->escape_string($_POST['password']);
-        $password2 = $conn->escape_string($_POST['password2']);
+        $passwordHashed = sha1($conn->escape_string($_POST['password']));
 
-        $user->register($email, $password, $password2);
+        if($user->login($email,$passwordHashed)){
+            header("Location: home.php");  
+        }
     }
 }
 ?>
@@ -31,13 +33,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST'){
             }
         ?>
         <div>
-            <form class="" method="post" action="home.php">
+            <form class="" method="post" action="log_in.php">
             <fieldset>
                 <legend>LOG IN</legend>
                     <label>E-Mail</label><br>
-                    <input name="email" type="text" maxlength="50" value=""/><br>
+                    <input name="email" type="text" maxlength="50" /><br>
                     <label>Password</label><br>
-                    <input name="password" type="password" maxlength="30" value=""/><br>
+                    <input name="password" type="password" maxlength="30" /><br>
                     <button type="submit" name="submit" value="login">LOG IN</button>
             </fieldset>
             </form>

@@ -1,9 +1,11 @@
+ <?php
+ 
+require_once './top_inc.php';
+
+
+?>
+
 <!DOCTYPE html>
-<!--
-To change this license header, choose License Headers in Project Properties.
-To change this template file, choose Tools | Templates
-and open the template in the editor.
--->
 <html>
     <head>
         <meta charset="UTF-8">
@@ -11,7 +13,16 @@ and open the template in the editor.
     </head>
     <body>
         <?php
-        // put your code here
+ 
+            if ($_SERVER['REQUEST_METHOD'] === 'GET'){
+                if (isset($_GET['userId'])){
+                    global $conn;
+                    $userId = $conn->escape_string($_GET['userId']);
+                    $user->loadFromDB($userId);
+                    $user->getMyPosts();
+                }
+            }
         ?>
+
     </body>
 </html>
