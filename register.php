@@ -23,26 +23,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST'){
     <body>
         <?php
             if ($_SERVER['REQUEST_METHOD'] === 'GET'){
-                if (isset($_GET['duplicateEmail'])){
-                    if ($_GET['duplicateEmail'] == 1){
-                        echo "<h3>Given e-mail already exists. Please pick a different one.</h3>";
-                    }
-                }
-                if (isset($_GET['wrongEmail'])){
-                    if ($_GET['wrongEmail'] == 1){
-                        echo "<h3>Given e-mail is incorrect. Please pick an existing one.</h3>";
-                    }
-                }
-                if (isset($_GET['passwordNotValid'])){
-                    if ($_GET['passwordNotValid'] == 1){
-                        echo "<h3>Password must be at least 8 characters long. Please try again.</h3>";
-                    }
-                }
-                if (isset($_GET['passwordsNotEqual'])){
-                    if ($_GET['passwordsNotEqual'] == 1){
-                        echo "<h3>Passwords not equal. Please try again.</h3>";
-                    }
-                }
+                
+                echoLine('duplicateEmail', 'Given e-mail already exists. Please pick a different one.');
+                echoLine('wrongEmail', 'Given e-mail is incorrect. Please pick an existing one.');
+                echoLine('passwordNotValid', 'Password must be at least 8 characters long. Please try again.');
+                echoLine('passwordsNotEqual', 'Passwords not equal. Please try again.');
+                
             }
         
         ?>

@@ -91,6 +91,10 @@ class User {
         return $this->passwordValid;
     }
 
+    function getPasswordHashed() {
+        return $this->passwordHashed;
+    }
+        
     public function register($email, $password, $password2){
 
         global $conn;
@@ -111,12 +115,58 @@ class User {
             die();
         }
 
-        $sql = "INSERT INTO Users(`email`,`password`) VALUES ('$this->email','$this->passwordHashed')";
+        $sql = "INSERT INTO Users(`email`,`password`) VALUES ('$this->getEmail()','$this->getPasswordHashed()')";
         $conn->query($sql);
 
-        $this->login($this->email, $this->passwordHashed);
+        $this->login($this->getEmail(), $this->getPasswordHashed());
 
         header("Location: home.php?firstTime=1");        
+        
+    }
+    
+    public function changeEmail($email){
+
+        global $conn;
+
+        if (!$this->setEmail($email) && $this->getEmailValid()){
+            header("Location: editUser.php?duplicateEmail=1");
+            die();
+        } elseif (!$this->setEmail($email)){
+            header("Location: editUser.php?wrongEmail=1");
+            die();
+        }
+
+        $sql = "UPDATE Users SET email = '" . $this->getEmail() . "' WHERE email= '" . $_SESSION['email'] . "'";
+        $conn->query($sql);
+
+        var_dump($sql);
+        var_dump($_SESSION);
+        
+        
+        //$this->login($this->getEmail(), $this->getPasswordHashed());
+
+        //header("Location: editUser.php?success=1");        
+        
+    }
+    
+    public function changePassword($password, $password2){
+
+        global $conn;
+
+        if (!$this->setPassword($password, $password2) && $this->getPasswordValid()){
+            header("Location: editUser.php?passwordsNotEqual=1");
+            die();
+        } elseif (!$this->setPassword($password, $password2)){
+            header("Location: editUser.php?passwordNotValid=1");
+            die();
+        }
+
+        $sql = "UPDATE Users SET password ='" . $this->getPasswordHashed() . "' WHERE email= '" . $this->getEmail() . "'";
+        $conn->query($sql);
+
+        $this->login($this->getEmail(), $this->getPasswordHashed());
+
+        //header("Location: editUser.php?success=1");        
         
     }
     
@@ -136,7 +186,9 @@ class User {
 
             return true;
         } else {
-            header("Location: log_in.php?userOrPasswordNotFound=1");
+            
+            //header("Location: log_in.php?userOrPasswordNotFound=1");
+            echo "false";
             return false;
         }
     }
@@ -178,11 +230,22 @@ class User {
         if (isset($result)){
             foreach ($result as $post){
             echo "<a href='./showPost.php?postId=" . $post['post_id'] . "' style='border: dotted 1px blue; display: block;'>";
-                echo "<h4>Wpis z dnia: " . $post['date'] . "</h4>";
-                echo "<p>" . $post['post_body'] . "</p>";
-                echo "</a>";
+            echo "<h4>Wpis z dnia: " . $post['date'] . "</h4>";
+            echo "<p>" . $post['post_body'] . "</p>";
+            
+            $sql2 = "SELECT `id` FROM `Posts` JOIN `Comments` ON Posts.post_id=Comments.post_id WHERE Posts.post_id = ". $post['post_id'];
+            $result2 =$conn->query($sql2);
+            echo "<p>Number of comments: " . $result2->num_rows . "</p>";
+            echo "</a>";
             }
         }
+    }
+    
+    public function showMyName(){
+        global $conn;
+        $sql ="SELECT `email` FROM `Users`  WHERE id = " . $this->getId();
+        $result = $conn->query($sql);
+        return $result->fetch_assoc()['email'];
     }
     
     public function getMyMessages(){

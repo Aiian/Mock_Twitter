@@ -7,6 +7,7 @@ if ($conn->connect_error) {
 }
 
 require_once './classes/User.php';
+require_once './functions/simpleGETecho.php';
 
 $user = new User();
 

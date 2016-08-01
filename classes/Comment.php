@@ -1,15 +1,17 @@
 <?php
 
-class Post {
+class Comment {
    
     private $id;
     private $userId;
+    private $postId;
     private $body;
     private $date;
     
     public function __construct() {
         $this->id = -1;
         $this->setUserId(null);
+        $this->setPostId(null);
         $this->setBody(null);
     }
 
@@ -25,6 +27,10 @@ class Post {
         return $this->body;
     }
 
+    public function getPostId() {
+        return $this->postId;
+    }
+
     public function setUserId($userId) {
         $this->userId = $userId;
     }
@@ -33,6 +39,10 @@ class Post {
         $this->body = $body;
     }
 
+    function setPostId($postId) {
+        $this->postId = $postId;
+    }
+        
     public function getDate() {
         return $this->date;
     }
@@ -41,23 +51,19 @@ class Post {
         $this->date = $date;
     }
 
-    function setId($id) {
-        $this->id = $id;
-    }
-            
+        
     public function loadFromDB($id) {
         global $conn;
 
-        $sql = "SELECT post_id, user_id, post_body, date FROM `Posts` WHERE post_id=$id";
+        $sql = "SELECT user_id, post_id, comment_body, comment_date FROM `Comments` WHERE comment_id=$id";
         $result = $conn->query($sql);
-        $postDataArray = $result->fetch_assoc();
+        $commentDataArray = $result->fetch_assoc();
         
-        $this->setId($postDataArray['post_id']);
-        $this->setBody($postDataArray['post_body']);
-        $this->setDate($postDataArray['date']);
-        $this->setUserId($postDataArray['user_id']);
+        $this->setBody($commentDataArray['comment_body']);
+        $this->setDate($commentDataArray['comment_date']);
+        $this->setUserId($commentDataArray['user_id']);
+        $this->setPostId($commentDataArray['post_id']);
         
-        $_SESSION['post_id'] = $this->getId();
         }
 
     
@@ -67,7 +73,8 @@ class Post {
         
         $this->setBody($body);
         $this->setUserId($_SESSION['id']);
-        $sql = "INSERT INTO `Posts`(user_id, post_body, date) VALUES (" . $this->getUserId() . ", '" . $this->getBody() . "', NOW())";
+        $this->setPostId($_SESSION['post_id']);
+        $sql = "INSERT INTO `Comments`(user_id, post_id, comment_body, comment_date) VALUES (" . $this->getUserId() . ", ". $this->getPostId() . ", '" . $this->getBody() . "', NOW())";
         $conn->query($sql);
     }
     
@@ -90,15 +97,7 @@ class Post {
         echo "<p>" . $this->getBody() . "</p>";
     }
     
-    public function loadAllComments(){
-        global $conn;
-        $sql = "SELECT `email`, `comment_body`, `comment_date` FROM `Posts` JOIN `Comments` ON Posts.post_id=Comments.post_id JOIN `Users` ON Comments.user_id=Users.id WHERE Posts.post_id = " . $this->getId();
-        $result =$conn->query($sql);
-        foreach ($result as $comment){
-            echo "<h5>Comment by " . $comment['email'] . " from " . $comment['comment_date'] . "</h5>";
-            echo "<p>" . $comment['comment_body'] . "</p>";
-        }
-    }
+    
     
     
     

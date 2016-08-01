@@ -26,12 +26,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST'){
     <body>
         <?php
             if ($_SERVER['REQUEST_METHOD'] === 'GET'){
+                $user->loadFromDB();
                 if (isset($_GET['firstTime'])){
                     if ($_GET['firstTime'] == 1){
-                        echo "<h3>Nice to see you " . $_SESSION['email'] . " for the first time. Let's have some fun at Mock_Twitter!</h3>";
+                        echo "<h3>Nice to see you " . $user->showMyName() . " for the first time. Let's have some fun at Mock_Twitter!</h3>";
+                    } else {
+                        echo "<h3>Nice to see you " . $user->showMyName() . " again. Let's have some fun at Mock_Twitter!</h3>";
                     }
                 }
             }
+ 
         $user->showRandUsers(5);
         ?>
         <div>
