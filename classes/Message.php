@@ -1,5 +1,7 @@
 <?php
 
+require_once './forms/inputForms.php';
+
 class Message {
    
     private $id;
@@ -116,15 +118,22 @@ class Message {
         $conn->query($sql);
     }
     
-    public function showMessageString($string = 0) {
+    public function showMessageString() {
 
+        global $conn;
         
-        
-        if ($string == 0){
+        if ($this->getString() == 0){
             $this->show();
+            if ($this->getReceiverId() == $_SESSION['id']){
+                replyForm();
+            }
         } else {
-        
-            
+            $sql = "SELECT message_id FROM `Messages` WHERE message_string = " . $this->getString();
+            $result = $conn->query($sql);
+            foreach ($result as $row){
+                loadFromDB($row['message_id']);
+                show();
+            }
         }
        
     }

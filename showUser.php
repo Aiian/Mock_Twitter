@@ -5,8 +5,6 @@ if (isset($_GET['userId'])){
     $userId = $conn->escape_string($_GET['userId']);
     $user->loadFromDB($userId);
 }
-    
-
 ?>
 
 <!DOCTYPE html>
@@ -36,7 +34,7 @@ if (isset($_GET['userId'])){
                 <legend>SEND MESSAGE TO <?php echo $user->showMyName(); ?></legend>
                     <label>Your Message</label><br>
                     <input name="newMessage" type="text"  /><br>
-                    <button type="submit" name="submit" value="login">SEND</button>
+                    <button type="submit" name="submit">SEND</button>
             </fieldset>
             </form>
         </div>

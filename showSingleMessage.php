@@ -18,7 +18,8 @@ and open the template in the editor.
   
     </head>
     <body>
-       <?php
+        <?php
+       
             if (isset($_GET['messageId'])){
                 global $conn;
                 $messageId = $conn->escape_string($_GET['messageId']);
