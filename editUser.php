@@ -30,14 +30,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['submitPassword'])){
     </head>
     <body>
         <?php
-        if ($_SERVER['REQUEST_METHOD'] === 'GET'){
-                
-                echoLine('duplicateEmail', 'Given e-mail already exists. Please pick a different one.');
-                echoLine('wrongEmail', 'Given e-mail is incorrect. Please pick an existing one.');
-                echoLine('passwordNotValid', 'Password must be at least 8 characters long. Please try again.');
-                echoLine('passwordsNotEqual', 'Passwords not equal. Please try again.');
-                
-            }
+            echoLine('duplicateEmail', 'Given e-mail already exists. Please pick a different one.');
+            echoLine('wrongEmail', 'Given e-mail is incorrect. Please pick an existing one.');
+            echoLine('passwordNotValid', 'Password must be at least 8 characters long. Please try again.');
+            echoLine('passwordsNotEqual', 'Passwords not equal. Please try again.');
+            echoLine('success', 'Data has been changed successfully.');
         ?>
     <div>
         <form class="" method="post" action="">

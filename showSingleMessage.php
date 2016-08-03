@@ -1,3 +1,10 @@
+<?php
+require_once './top_inc.php';
+?>
+
+
+
+
 <!DOCTYPE html>
 <!--
 To change this license header, choose License Headers in Project Properties.
@@ -8,10 +15,16 @@ and open the template in the editor.
     <head>
         <meta charset="UTF-8">
         <title></title>
+  
     </head>
     <body>
-        <?php
-        // put your code here
+       <?php
+            if (isset($_GET['messageId'])){
+                global $conn;
+                $messageId = $conn->escape_string($_GET['messageId']);
+                $message->loadFromDB($messageId);
+                $message->showMessageString();
+            }
         ?>
     </body>
 </html>

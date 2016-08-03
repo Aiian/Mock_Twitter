@@ -9,7 +9,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST'){
         $passwordHashed = sha1($conn->escape_string($_POST['password']));
 
         if($user->login($email,$passwordHashed)){
-            header("Location: home.php");  
+            header("Location: index.php");  
         }
     }
 }
@@ -24,13 +24,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST'){
     </head>
     <body>
         <?php
-            if ($_SERVER['REQUEST_METHOD'] === 'GET'){
-                if (isset($_GET['userOrPasswordNotFound'])){
-                    if ($_GET['userOrPasswordNotFound'] == 1){
-                        echo "<h3>Wrong e-mail or password. Please try again.</h3>";
-                    }
-                }
-            }
+            echoLine('userOrPasswordNotFound', 'Wrong e-mail or password. Please try again.');
+            echoLine('logout', 'Logged out successfully. See you soon.');
         ?>
         <div>
             <form class="" method="post" action="log_in.php">

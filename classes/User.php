@@ -19,7 +19,6 @@ class User {
         $this->id = $id;
     }
 
-        
     public function getEmail() {
         return $this->email;
     }
@@ -120,7 +119,7 @@ class User {
 
         $this->login($this->getEmail(), $this->getPasswordHashed());
 
-        header("Location: home.php?firstTime=1");        
+        header("Location: index.php?firstTime=1");        
         
     }
     
@@ -139,13 +138,9 @@ class User {
         $sql = "UPDATE Users SET email = '" . $this->getEmail() . "' WHERE email= '" . $_SESSION['email'] . "'";
         $conn->query($sql);
 
-        var_dump($sql);
-        var_dump($_SESSION);
-        
-        
-        //$this->login($this->getEmail(), $this->getPasswordHashed());
+        $this->login($this->getEmail(), $_SESSION['password']);
 
-        //header("Location: editUser.php?success=1");        
+        header("Location: editUser.php?success=1");        
         
     }
     
@@ -161,12 +156,12 @@ class User {
             die();
         }
 
-        $sql = "UPDATE Users SET password ='" . $this->getPasswordHashed() . "' WHERE email= '" . $this->getEmail() . "'";
+        $sql = "UPDATE Users SET password ='" . $this->getPasswordHashed() . "' WHERE email= '" . $_SESSION['email'] . "'";
         $conn->query($sql);
 
-        $this->login($this->getEmail(), $this->getPasswordHashed());
+        $this->login($_SESSION['email'], $this->getPasswordHashed());
 
-        //header("Location: editUser.php?success=1");        
+        header("Location: editUser.php?success=1");        
         
     }
     
@@ -177,7 +172,7 @@ class User {
         $sql = "SELECT `email`, `password`, `id` FROM `Users` WHERE email = '$email'";
         $result = $conn->query($sql);
         $checkArray = $result->fetch_assoc();
-
+        
         if ($email === $checkArray['email'] && $passwordHashed === $checkArray['password']){
             
             $_SESSION['email'] = $email;
@@ -185,10 +180,10 @@ class User {
             $_SESSION['id'] = $checkArray['id'];
 
             return true;
+            
         } else {
             
-            //header("Location: log_in.php?userOrPasswordNotFound=1");
-            echo "false";
+            header("Location: log_in.php?userOrPasswordNotFound=1");
             return false;
         }
     }
@@ -218,7 +213,7 @@ class User {
     public function loadFromDB($id = null){
         
         isset($id) ? $this->setId($id) : $this->setId($_SESSION['id']);
-
+        
     }
     
     public function getMyPosts(){
@@ -248,10 +243,45 @@ class User {
         return $result->fetch_assoc()['email'];
     }
     
-    public function getMyMessages(){
-        
+    public function getReceivedMessages(){
+
+        global $conn;
+        $sql = "SELECT email, message_id, sender_id, message_body, `read`, message_date, message_string FROM `Messages` JOIN `Users` ON Users.id=Messages.sender_id WHERE receiver_id=" . $_SESSION['id'] . " ORDER BY message_date DESC";
+        $result = $conn->query($sql);
+        echo "<h2>Messages Received</h2>";
+        if (isset($result)){
+            foreach ($result as $recMessage){
+                
+            strlen($recMessage['message_body']) > 30 ? $messageSnap = "<p>" . substr($recMessage['message_body'],0,30) . "...</p>" : $messageSnap = $recMessage['message_body'];  
+                
+            $recMessage['read'] == 1 ? $read = "class='read'" : $read = "class='unread'";
+            
+            echo "<a href='./showSingleMessage.php?messageId=" . $recMessage['message_id'] . "' style='border: dotted 1px blue; display: block;'>";
+            echo "<h4 $read>Message from " . $recMessage['email'] . " received on " . $recMessage['message_date'] . "</h4>";
+            echo $messageSnap;
+            echo "</a>";
+            }
+        }
     }
     
+    public function getSentMessages(){
+        global $conn;
+        $sql = "SELECT email, message_id, sender_id, message_body, message_date, message_string FROM `Messages` JOIN `Users` ON Users.id=Messages.receiver_id WHERE sender_id=" . $_SESSION['id'] . " ORDER BY message_date DESC";
+        $result = $conn->query($sql);
+
+        echo "<h2>Messages Sent</h2>";
+        if (isset($result)){
+            foreach ($result as $sentMessage){
+                
+            strlen($sentMessage['message_body']) > 30 ? $messageSnap = "<p>" . substr($sentMessage['message_body'],0,30) . "...</p>" : $messageSnap = $sentMessage['message_body'];  
+
+            echo "<a href='./showSingleMessage.php?messageId=" . $sentMessage['message_id'] . "' style='border: dotted 1px blue; display: block;'>";
+            echo "<h4>Message to " . $sentMessage['email'] . " sent on " . $sentMessage['message_date'] . "</h4>";
+            echo $messageSnap;
+            echo "</a>";
+            }
+        }
+    }
     
     public function deleteUser() {
         
@@ -262,7 +292,6 @@ class User {
         global $conn;
     $sql = "SELECT id, email FROM `Users` WHERE email NOT IN ('" . $_SESSION['email'] . "') ORDER BY RAND() LIMIT " . $numToShow;
         $result = $conn->query($sql);
-        $userArray = [];
         foreach ($result as $row){
             echo "<a href='./showUser.php?userId=" . $row['id'] . "'>Check what's up with " . $row['email'] . "</a><br>";
         }

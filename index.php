@@ -39,11 +39,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST'){
         $user->showRandUsers(5);
         ?>
         <div>
-            
+            <ol>MENU
+                <li><a href="editUser.php">Change your info</a></li>
+                <li><a href="log_in.php?logout=1">Log out</a></li>
+                <li><a href="showMessages.php">Messages</a></li>
+            </ol>
         </div>
         
        <div>
-            <form class="" method="post" action="home.php">
+            <form class="" method="post" action="">
             <fieldset>
                 <legend>CREATE NEW POST</legend>
                     <label>Your thoughts</label><br>

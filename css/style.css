@@ -1,0 +1,5 @@
+.unread {
+    font-weight: bolder;
+    text-decoration: underline;
+    color: red;
+}
